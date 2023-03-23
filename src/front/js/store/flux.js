@@ -1,54 +1,67 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			token: localStorage.getItem("token") || null,
+      		user_id: localStorage.getItem("user_id") || null,
+      		email: localStorage.getItem("email") || null,
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
+
+			createUser: async (formData) => {
+				console.log(formData)
+				return fetch("http://127.0.0.1:3001/api/sign_up", {
+					method: "POST",
+					body: JSON.stringify(formData),
+					headers: {
+						"Content-Type": "application/json",
+					},
+				})
+				.then(async (response) => {
+					const data = await response.json();
+					if(data.message == 'Form incomplete.'){
+						return false
+					} else {
+						return true
+					}
+				})
+			
 			},
 
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
-				}
+			logIn: async (formData) => {
+
+				return fetch("http://127.0.0.1:3001/api/login", {
+					method: "POST",
+					body: JSON.stringify(formData),
+					headers: {
+						"Content-Type": "application/json",
+					},
+				})
+				.then(async (response) => {
+					const data = await response.json();
+					console.log(data)
+					localStorage.setItem("token", data.token);
+					setStore({ token: data.token });
+					localStorage.setItem("user_id", data.user_id);
+					setStore({ user_id: data.user_id });
+					localStorage.setItem("email", data.email);
+					setStore({ email: data.email });
+					if(data.error == 'Bad credentials'){
+						return false
+					} else {
+						return true
+					}
+				})
 			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
+			logout: () => {
+				localStorage.removeItem("token");
+				localStorage.removeItem("user_id");
+				localStorage.removeItem("email");
+				setStore({ token: null, user_id: null, email: null });
+			  },
 
-				//reset the global store
-				setStore({ demo: demo });
-			}
 		}
-	};
+	}
 };
 
 export default getState;
