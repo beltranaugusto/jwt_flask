@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Signup } from "./component/Signup.jsx";
+import { Login } from "./component/Login.jsx";
 import { Home } from "./pages/home.jsx";
 
 
@@ -18,6 +20,8 @@ const Layout = () => {
                 
                     <Routes>
                         <Route element={<Home />} path="/" />
+                        <Route element={<Signup />} path="/signup" />
+                        <Route element={<Login />} path="/login" />
                     </Routes>
             </BrowserRouter>
         </div>

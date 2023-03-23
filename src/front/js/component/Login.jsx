@@ -34,6 +34,10 @@ export const Login = () => {
             </div>
 
             <button onClick={() => handleSubmit() } className="btn btn-success m-3">Login</button>
+            <Link to="/signup">
+                <button className="btn btn-primary">Sign Up</button>
+            </Link>
+            
 
             {error && 
                 <div className="alert alert-danger m-3" role="alert">
